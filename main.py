@@ -1,9 +1,9 @@
-game_name = "Piggy from Hell"
+game_name = "Zombie Break"
 print(f"Welcome to {game_name}!")
 print("===========================")
 
 # Ask for the character's name 
-name = input("Before we begin, what is your charcter's name? \n> ")
+name = "Tester"
 
 # Print the name
 print(f"Great, {name}! Let's begin the adventure!")
@@ -12,7 +12,9 @@ print(f"Great, {name}! Let's begin the adventure!")
 player = {
     "name": name,
     "health": 100,
-    "coin": 0
+    "coin": 0,
+    "x": 0,
+    "y": 0
 }
 
 # Print player stats
@@ -21,18 +23,15 @@ print(f"Character stats: {player}")
 import random
 
 events = ["find a coin", "meet a monster", "do nothing"]
-event = random.choice(events)
-print(f"While exploring, you {event}!")
 
-# Update stats
-if event == "find a coin":
+def check_event():
+    global events, player
+    event = random.choice(events)
+
+if events == "find a coin":
     player["coin"] += 1
-    print(f"{player['name']} found a coin! Now has {player['coin']} coins.")
-elif event == "meet a monster":
+elif events == "meet a monster":
     player["health"] -= 10
-    print(f"oh no! {player['name']} fought a monster and now has {player['health']} health.")
 else:
-    print(f"{player['name']} wandered around but nothing happened.")
+    pass
 
-# Print updated player stats 
-print(f"Updated character stats: {player}")
