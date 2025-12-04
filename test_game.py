@@ -7,10 +7,10 @@ from game import *
 
 class TestGame(unittest.TestCase):
 
-    # ---------------- Player Tests ----------------
+    # --------------- Player Tests ----------------
     def test_player_initialization(self):
-        p = layer("Alice")
-        self.assertEqual(p.name, "Alice")
+        p = player()
+        self.assertEqual(p.name, "Tester")
         self.assertEqual(p.x, 0)
         self.assertEqual(p.y, 0)
         self.assertEqual(p.health, 100)
@@ -19,30 +19,35 @@ class TestGame(unittest.TestCase):
     def test_player_movement(self):
         p = player()
         map_size = 5
+
         p.move("s", map_size)
         self.assertEqual(p.x, 1)
+
         p.move("d", map_size)
         self.assertEqual(p.y, 1)
+
         p.move("w", map_size)
         self.assertEqual(p.x, 0)
+
         p.move("a", map_size)
         self.assertEqual(p.y, 0)
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_player_invalid_move(self, mock_stdout):
         p = player()
-        p.move("w", 5)
+        p.move("w", 5)  # moving up at top edge
         self.assertIn("You cannot move that way!", mock_stdout.getvalue())
 
     # ---------------- GameMap Tests ----------------
     @patch('sys.stdout', new_callable=StringIO)
     def test_game_map_draw(self, mock_stdout):
         p = player()
-        gm = GameMap(3)
+        gm = GameMap()
         gm.draw(p)
+
         output = mock_stdout.getvalue()
-        self.assertIn("C", output)
-        self.assertIn("M", output)
+        self.assertIn("C", output)      # Character
+        self.assertIn("M", output)      # Goal tile
         self.assertIn("Health:", output)
         self.assertIn("Coin:", output)
 
@@ -65,20 +70,21 @@ class TestGame(unittest.TestCase):
         prev_health = game.player.health
         prev_coin = game.player.coin
         game.check_event()
+
         self.assertEqual(game.player.health, prev_health)
         self.assertEqual(game.player.coin, prev_coin)
 
     # ---------------- Game Victory Test ----------------
-    @patch('builtins.input', side_effect=["s"]*8 + ["d"]*8)
+    @patch('builtins.input', side_effect=(["d"] * 8) + (["s"] * 8))
     @patch('sys.stdout', new_callable=StringIO)
     def test_reach_exit(self, mock_stdout, mock_input):
         game = Game()
-        x, y = 0, 0
-        while not (game.player.x == game.map_size - 1 and game.player.y == game.map_size - 1):
-            game.player.move("s", game.map_size) if game.player.x < game.map_size - 1 else None
-            game.player.move("d", game.map_size) if game.player.y < game.map_size - 1 else None
-        self.assertEqual(game.player.x, game.map_size - 1)
-        self.assertEqual(game.player.y, game.map_size - 1)
+
+        # simulate moves until reaching (8,8)
+        game.play()
+
+        self.assertIn("Congratulations! You reach the gate for next level.", mock_stdout.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
